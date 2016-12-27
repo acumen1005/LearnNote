@@ -6,15 +6,16 @@
 ```
 $ git branch -a
 * master
-  photoGallery  
+  xxxxx  
 ```
 ```
 $ git pull upstream master
 ```
 ```
-$ git checkout photoGallery
-Switched to branch 'photoGallery'
+$ git checkout xxxxx
+Switched to branch 'xxxxx'
 ``` 
+#### 2. 进行 rebase 操作
 ```
 $ git rebase master
 ``` 
@@ -23,3 +24,10 @@ $ git rebase master
 ```
 $ git rebase --continue
 ```
+#### 2. 再 push 上去
+这里要强行 push ，-f
+```
+$ git push origin xxxxx -f
+```
+
+
