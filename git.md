@@ -24,7 +24,7 @@ $ git rebase master
 ```
 $ git rebase --continue
 ```
-#### 2. 再 push 上去
+#### 3. 再 push 上去
 这里要强行 push ，-f
 ```
 $ git push origin xxxxx -f
