@@ -215,4 +215,51 @@ A 强引用 B 中的成员变量 b，B 强引用 A 中的成员变量 a。导致
 
 简单点说就是：并行指物理上同时执行，并发指能够让多个任务在逻辑上交织执行的程序设计
 
+# iOS 中小 Tips  
+1. UIWebview 中页面在出发一个点击事件（特指 URL 跳转的那种事件），如果是 URL scheme 等，UIWebView 处理不了会转发到 appdelegate 中的代理 `application:openURL:sourceApplication:annotation:` 来处理；但是对于 WKWebview 来说，不会转发到 appdelegate 中，如果需要处理的链接可以在 `webView:decidePolicyForNavigationAction:
+decisionHandler:` 来做处理或者转发。
+2. 方便的 app 内嵌页面的调试或者开发。
+ - [Safari] -> [偏好设置] -> [高级] -> [在菜单栏中显示‘开发’]
+ - [手机] -> [设置] -> [Safari] -> [高级] -> [web 检查器]
+
+3. 关于做一个 framework 需要注意的，在同一个 module 中的，默认的 internal 的访问层级就可以让 ViewController 访问到关于 Timer 和相应方法的信息。但是它们处于不同的 module 中，所以我们需要对 Timer.swift 的访问权限进行一些修改，在需要外部访问的地方加上 public 关键字。简单说就是 private 只允许本文件访问，不写的话默认是 internal，允许统一 module 访问，而要提供给别的 module 使用的话，需要声明为 public。  
+
+  - fileprivate :如名字一样,只有这个文件才能访问.
+  - private: 只能在作用域访问.
+  - interal: 默认,在整个模块可以访问.
+  - public: 在模块里面是可以继承或者重写,在模块外可以访问,但不可以重写和继承.
+  - open:在所有模块都可以访问,重写和继承.
+open> public > interal > fileprivate > private
+
+4. 远程推送添加 Capabilities 的时候自动增加的 lukou.entitlements 文件中的 APS-Enviroment 字段会自动根据证书来确定是 development 还是 producation 。所以打包发布的时候这个字段会自动改变
+5. 关于 share extension 在 safari 中注入 js。在 NSExtensionAttributes 节点下 增加 `NSExtensionJavaScriptPreprocessingFile ＝ ExtensionPreprocessingJS` 字段，其中并在 extension 的 根目录下添加一个名为 ExtensionPreprocessingJS 的 js 文件。其中内容的模版如下  
+
+	```
+	var MyPreprocessor = function() {};
+	
+	MyPreprocessor.prototype = {
+	    run: function(arguments) {
+	        arguments.completionFunction({"URL": document.URL})
+	};
+	
+	var ExtensionPreprocessingJS = new MyPreprocessor;
+	```  
+
+	值得注意的是 `var ExtensionPreprocessingJS = new MyPreprocessor;` 变量名是固定的。 在 `{"URL": document.URL}` 类似 json 格式。可以进行 DOM 操作来得到网页中的值。
+
+	```
+	[self.extensionContext.inputItems enumerateObjectsUsingBlock:^(NSExtensionItem *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+	        [obj.attachments enumerateObjectsUsingBlock:^(NSItemProvider *  _Nonnull itemProvider, NSUInteger idx, BOOL * _Nonnull stop) {
+	            if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypePropertyList]) {
+	                [itemProvider loadItemForTypeIdentifier:(NSString *)kUTTypePropertyList options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
+	                    dispatch_async(dispatch_get_main_queue(), ^{
+	                        NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey];
+	                        NSString *url = jsPreprocessingResults[@"URL"];
+	                    });
+	                }];
+	            }
+	        }];
+	    }];
+	```  
+
 
