@@ -38,9 +38,5 @@ code review 结束之后
 ```
 $ git rebase -i master
 ```
-此时会出现一个编辑 message 的窗口，包含一些提交 message 信息，根据下面 command 的提示做相应的操作。值得注意的是，这里的合并 commit 只能是下面向上面合并。之后还是需要
-
-```
-$ git push origin xxxxx -f
-```
+此时会出现一个编辑 message 的窗口，包含一些提交 message 信息，根据下面 command 的提示做相应的操作。值得注意的是，这里的合并 commit 只能是下面向上面合并。如何合并成功之后，还需要编辑一个 message 作为合并之后的 commit 一个 message。
 

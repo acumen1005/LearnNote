@@ -261,5 +261,11 @@ open> public > interal > fileprivate > private
 	        }];
 	    }];
 	```  
+6. 关于推送 payload 长度的问题 
+	- iOS7.0 之前推送 payload 的最大长度为 256 个字节
+	- iOS8.0 版本 payload 最大长度为 2KB
+	- iOS9.0 之后基于 HTTP/2 的 APNS 服务的 API 能接受的 JSON 字典最大可以达到 4KB
+
+	但是我认为 payload 尽可能远小于这个值。
 
 
